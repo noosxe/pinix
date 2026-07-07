@@ -22,26 +22,19 @@
     in
     {
       # 1. The Package: Allows you to run 'nix run' without installing anything permanently
-      packages = forEachSystem (pkgs: {
-        default = pkgs.writeShellScriptBin "pi" ''
+      packages = forEachSystem (pkgs: rec {
+        pinix = pkgs.writeShellScriptBin "pi" ''
           export PATH="${pkgs.nodejs_22}/bin:$PATH"
           # Fires up the agent seamlessly while respecting NixOS execution guardrails
-          exec ${pkgs.nodejs_22}/bin/npx --ignore-scripts @earendil-works/pi-coding-agent "$@"
+          exec ${pkgs.nodejs_22}/bin/npx --yes --ignore-scripts @earendil-works/pi-coding-agent "$@"
         '';
+        default = pinix;
       });
 
-      # 2. The Dev Shell: For drop-in terminal environments via 'nix develop'
-      devShells = forEachSystem (pkgs: {
-        default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.nodejs_22
-          ];
-
-          shellHook = ''
-            echo "🤖 Pi Coding Agent development shell loaded!"
-            echo "-> You can now execute 'nix run' to spin up the agent."
-          '';
-        };
-      });
+      # 2. The Overlay: Allows easy integration into other Nix configurations
+      overlays.default = final: prev: {
+        pinix = self.packages.${final.system}.default;
+        pi = self.packages.${final.system}.default;
+      };
     };
 }
