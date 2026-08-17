@@ -9,7 +9,7 @@ This wrapper ensures that the agent executes smoothly, respecting NixOS executio
 You can run the Pi Coding Agent directly without installing it globally:
 
 ```bash
-nix run github:mechsoull/pinix -- --help
+nix run github:noosxe/pinix -- --help
 ```
 
 ---
@@ -23,7 +23,7 @@ inputs = {
   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
   # Add pinix to your inputs
-  pinix.url = "github:mechsoull/pinix"; # Replace with your actual repository path
+  pinix.url = "github:noosxe/pinix";
 };
 ```
 
