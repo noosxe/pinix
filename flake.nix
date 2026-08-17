@@ -24,9 +24,9 @@
       # 1. The Package: Allows you to run 'nix run' without installing anything permanently
       packages = forEachSystem (pkgs: rec {
         pinix = pkgs.writeShellScriptBin "pi" ''
-          export PATH="${pkgs.nodejs_24}/bin:$PATH"
+          export PATH="${pkgs.nodejs_26}/bin:$PATH"
           # Fires up the agent seamlessly while respecting NixOS execution guardrails
-          exec ${pkgs.nodejs_24}/bin/npx --yes --ignore-scripts @earendil-works/pi-coding-agent "$@"
+          exec ${pkgs.nodejs_26}/bin/npx --yes --ignore-scripts @earendil-works/pi-coding-agent "$@"
         '';
         default = pinix;
       });
