@@ -8,6 +8,9 @@
   outputs =
     { self, nixpkgs }:
     let
+      # The single source of truth for the pi version.
+      # Upgrading = changing this line, committing, relocking downstream.
+      piVersion = "1.1.0";
       # Define architectures you want this flake to support
       supportedSystems = [
         "x86_64-linux"
@@ -26,7 +29,7 @@
         pinix = pkgs.writeShellScriptBin "pi" ''
           export PATH="${pkgs.nodejs_26}/bin:$PATH"
           # Fires up the agent seamlessly while respecting NixOS execution guardrails
-          exec ${pkgs.nodejs_26}/bin/npx --yes --ignore-scripts @earendil-works/pi-coding-agent "$@"
+          exec ${pkgs.nodejs_26}/bin/npx --yes --ignore-scripts @earendil-works/pi-coding-agent@${piVersion} "$@"
         '';
         default = pinix;
       });
