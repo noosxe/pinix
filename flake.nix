@@ -10,7 +10,7 @@
     let
       # The single source of truth for the pi version.
       # Upgrading = changing this line, committing, relocking downstream.
-      piVersion = "1.1.0";
+      piVersion = "1.2.0";
       # Define architectures you want this flake to support
       supportedSystems = [
         "x86_64-linux"
