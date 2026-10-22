@@ -1,0 +1,15 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Group all action updates into a single PR
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    # Conventional commits: chore(deps): bump <action> from X to Y
+    commit-message:
+      prefix: "chore"
+      include: "scope"
