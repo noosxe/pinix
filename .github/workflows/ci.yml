@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flake:
+    name: Build ${{ matrix.system }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Native GitHub runners for every supported system,
+          # so all four targets are built without QEMU emulation.
+          - system: x86_64-linux
+            os: ubuntu-latest
+          - system: aarch64-linux
+            os: ubuntu-24.04-arm
+          - system: x86_64-darwin
+            os: macos-13
+          - system: aarch64-darwin
+            os: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v16
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Evaluates every system in the flake and builds the native one,
+      # so any evaluation breakage surfaces on all runners.
+      - name: Flake check
+        run: nix flake check
+
+      - name: Build default package
+        run: nix build
+
+      - name: Smoke test (pi --version matches piVersion)
+        run: |
+          expected=$(sed -n 's/.*piVersion = "\(.*\)";.*/\1/p' flake.nix)
+          actual=$(./result/bin/pi --version | tail -n1)
+          echo "expected: $expected, actual: $actual"
+          [ "$actual" = "$expected" ]
